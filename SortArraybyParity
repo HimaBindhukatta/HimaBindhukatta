@@ -1,0 +1,32 @@
+import java.util.*;
+class Solution
+{
+    public int[] sortArrayByParityII(int[] nums)
+    {
+        Scanner sc=new Scanner(System.in);
+        int nums={4,2,5,7};
+        int i;
+        int res;
+        res=nums.size();
+        for(i=0;i<nums;i++)
+        {
+            if(nums[i]%2==0)
+            {
+                index=0;
+                res[index]=nums[i];
+                index=index+2;
+            }
+        }
+        index=1;
+        for(i=1;i<nums;i++)
+        {
+            if(nums[i]%2!=0)
+            {
+                res[index]=nums[i];
+                index=index+2;
+            }
+        }
+        return res;
+        
+    }
+}
