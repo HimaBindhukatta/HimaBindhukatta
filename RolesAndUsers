@@ -1,0 +1,324 @@
+Q1..................................
+
+import java.util.Scanner;
+
+public class Q1 {
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        System.out.print("Enter root role name: ");
+        String s = in.nextLine();
+        Role role = new Role(s);
+        System.out.println(role.roleName);
+    }
+
+    static class Role {
+        String roleName;
+
+        public Role(String roleName) {
+            this.roleName = roleName;
+        }
+    }
+}
+
+
+Q2.................................
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class Q2 {
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        System.out.print("Enter root role name : ");
+        String s = in.nextLine();
+        Role role = new Role(s);
+        requestInput(in, role);
+    }
+
+    private static void requestInput(Scanner in, Role role) {
+        int input = getInput(in);
+        isValidateInput(input, role);
+        requestSubRole(in, role);
+    }
+
+    private static void isValidateInput(int input, Role role) {
+        if (input == 1) return;
+        printRoleTree(role);
+        throw new RuntimeException("Invalid Input");
+    }
+
+    private static void requestSubRole(Scanner in, Role head) {
+        System.out.print("Enter sub role name : ");
+        String role = in.nextLine();
+        System.out.print("Enter reporting to role name : ");
+        String reporting = in.nextLine();
+        if (!reporting.equals(head.roleName)) {
+            throw new RuntimeException("Invalid reporting role");
+        }
+        head.addSubRole(role);
+        requestInput(in, head);
+    }
+
+    private static int getInput(Scanner in) {
+        System.out.print("Operations:\n  1. Add Sub Role\n\nOperation to be performed : ");
+        int input = in.nextInt();
+        in.nextLine();
+        return input;
+    }
+
+    private static void printRoleTree(Role head) {
+        System.out.print((head.roleName + " "));
+        if (head.subRoles != null)
+            for (Role role : head.subRoles) {
+                System.out.print(role.roleName + " ");
+            }
+    }
+
+    static class Role {
+        String roleName;
+        List<Role> subRoles;
+
+        public Role(String roleName) {
+            this.roleName = roleName;
+        }
+
+        public void addSubRole(String subRole) {
+            if (subRoles == null) subRoles = new ArrayList<>();
+            subRoles.add(new Role(subRole));
+        }
+    }
+}
+
+Q3..........................................
+
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Scanner;
+
+public class Q3 {
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        System.out.print("Enter root role name : ");
+        String s = in.nextLine();
+        Role role = new Role(s);
+        requestInput(in, role);
+    }
+
+
+    private static void requestInput(Scanner in, Role role) {
+        int input = getInput(in);
+        isValidateInput(input, role);
+        if (input == 1)
+            requestSubRole(in, role);
+        else printRoleForInputTree(in, role);
+    }
+
+    private static void printRoleForInputTree(Scanner in, Role role) {
+        printRoleTree(Collections.singletonList(role));
+        requestInput(in, role);
+    }
+
+    private static void isValidateInput(int input, Role role) {
+        if (input == 1 || input == 2) return;
+        printRoleTree(Collections.singletonList(role));
+        throw new RuntimeException("Invalid Input");
+    }
+
+    private static void requestSubRole(Scanner in, Role head) {
+        System.out.print("Enter sub role name : ");
+        String role = in.nextLine();
+        System.out.print("Enter reporting to role name : ");
+        String reporting = in.nextLine();
+        Role reportingRole = searchRole(reporting, head);
+        if (reportingRole == null) {
+            printRoleTree(Collections.singletonList(head));
+            throw new RuntimeException("Role not found");
+        }
+        reportingRole.addSubRole(role);
+        requestInput(in, head);
+    }
+
+    private static Role searchRole(String reporting, Role currentHead) {
+        if (currentHead.roleName.equals(reporting)) {
+            return currentHead;
+        }
+        if (currentHead.subRoles != null) {
+            for (Role role : currentHead.subRoles) {
+                Role searchResult = searchRole(reporting, role);
+                if (searchResult != null) return searchResult;
+            }
+        }
+        return null;
+    }
+
+    private static int getInput(Scanner in) {
+        System.out.print("Operations:\n  1. Add Sub Role\n  2. Display Roles\n\nOperation to be performed : ");
+        int input = in.nextInt();
+        in.nextLine();
+        return input;
+    }
+
+    private static void printRoleTree(List<Role> rolesToPrint) {
+        List<Role> subRoles = new ArrayList<>();
+        for (Role role : rolesToPrint) {
+            System.out.print(role.roleName + " ");
+            if (role.subRoles != null) subRoles.addAll(role.subRoles);
+        }
+        if (subRoles.size() > 0) printRoleTree(subRoles);
+    }
+
+    static class Role {
+        String roleName;
+        List<Role> subRoles;
+
+        public Role(String roleName) {
+            this.roleName = roleName;
+        }
+
+        public void addSubRole(String subRole) {
+            if (subRoles == null) subRoles = new ArrayList<>();
+            subRoles.add(new Role(subRole));
+        }
+    }
+}
+
+Q4..........................................
+
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Scanner;
+
+public class Q4 {
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        System.out.print("Enter root role name : ");
+        String s = in.nextLine();
+        Role role = new Role(s);
+        requestInput(in, role);
+    }
+
+
+    private static void requestInput(Scanner in, Role role) {
+        int input = getInput(in);
+        isValidateInput(input, role);
+        if (input == 1)
+            requestSubRole(in, role);
+        else if (input == 2) printRoleForInputTree(in, role);
+        else requestDeleteRole(in, role);
+    }
+
+    private static void requestDeleteRole(Scanner in, Role head) {
+        System.out.print("Enter the role to be deleted : ");
+        String delete = in.nextLine();
+        System.out.print("Enter the role to be transferred  : ");
+        String reporting = in.nextLine();
+        Role reportingRole = searchRole(reporting, head);
+        Role parentRole = searchParent(delete, head);
+        Role toDelete = searchRole(delete, head);
+        if (parentRole == null || toDelete == null)
+            throw new RuntimeException("Role to delete not found");
+        if (reportingRole == null)
+            throw new RuntimeException("Role to report not found");
+        if (reportingRole.parent == toDelete) {
+            reportingRole.parent = parentRole;
+        }
+        if (toDelete.subRoles != null)
+            reportingRole.subRoles.addAll(toDelete.subRoles);
+        parentRole.subRoles.remove(toDelete);
+        requestInput(in, head);
+    }
+
+    private static void printRoleForInputTree(Scanner in, Role role) {
+        printRoleTree(Collections.singletonList(role));
+        System.out.println();
+        requestInput(in, role);
+    }
+
+    private static void isValidateInput(int input, Role role) {
+        if (input >= 1 && input <= 3) return;
+        printRoleTree(Collections.singletonList(role));
+        throw new RuntimeException("Invalid Input");
+    }
+
+    private static void requestSubRole(Scanner in, Role head) {
+        System.out.print("Enter sub role name : ");
+        String role = in.nextLine();
+        System.out.print("Enter reporting to role name : ");
+        String reporting = in.nextLine();
+        Role reportingRole = searchRole(reporting, head);
+        if (reportingRole == null) {
+            printRoleTree(Collections.singletonList(head));
+            throw new RuntimeException("Role not found");
+        }
+        reportingRole.addSubRole(role);
+        requestInput(in, head);
+    }
+
+    private static Role searchParent(String reporting, Role currentHead) {
+        if (currentHead.roleName.equals(reporting)) {
+            return currentHead;
+        }
+        if (currentHead.subRoles != null) {
+            for (Role role : currentHead.subRoles) {
+                Role searchResult = searchParent(reporting, role);
+                if (searchResult != null) return role;
+            }
+        }
+        return null;
+    }
+
+    private static Role searchRole(String reporting, Role currentHead) {
+        if (currentHead.roleName.equals(reporting)) {
+            return currentHead;
+        }
+        if (currentHead.subRoles != null) {
+            for (Role role : currentHead.subRoles) {
+                Role searchResult = searchRole(reporting, role);
+                if (searchResult != null) return searchResult;
+            }
+        }
+        return null;
+    }
+
+    private static int getInput(Scanner in) {
+        System.out.print("Operations:\n  1. Add Sub Role.\n  2. Display Roles.\n  3. Delete Role.\n\nOperation to be performed : ");
+        int input = in.nextInt();
+        in.nextLine();
+        return input;
+    }
+
+    private static void printRoleTree(List<Role> rolesToPrint) {
+        List<Role> subRoles = new ArrayList<>();
+        for (Role role : rolesToPrint) {
+            System.out.print(role.roleName + ", ");
+            if (role.subRoles != null) subRoles.addAll(role.subRoles);
+        }
+        if (subRoles.size() > 0) printRoleTree(subRoles);
+    }
+
+    static class Role {
+        String roleName;
+        List<Role> subRoles;
+        Role parent;
+
+        public Role(String roleName) {
+            this.roleName = roleName;
+        }
+
+        public Role(String roleName, Role parent) {
+            this.roleName = roleName;
+            this.parent = parent;
+        }
+
+        public void addSubRole(String subRole) {
+            if (subRoles == null) subRoles = new ArrayList<>();
+            subRoles.add(new Role(subRole, this));
+        }
+    }
+}
+
